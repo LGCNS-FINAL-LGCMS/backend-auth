@@ -9,4 +9,9 @@ public class AuthRequest {
         String idTokenString
     ) {
     }
+
+    public record RefreshTokenRequest(
+        String refreshToken
+    ) {
+    }
 }

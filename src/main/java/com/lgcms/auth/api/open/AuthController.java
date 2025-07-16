@@ -1,7 +1,9 @@
 package com.lgcms.auth.api.open;
 
+import com.lgcms.auth.api.dto.AuthRequest.RefreshTokenRequest;
 import com.lgcms.auth.api.dto.AuthRequest.SignInRequest;
 import com.lgcms.auth.api.dto.AuthResponse.SignInResponse;
+import com.lgcms.auth.api.dto.AuthResponse.TokenResponse;
 import com.lgcms.auth.remote.member.dto.SocialType;
 import com.lgcms.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +30,10 @@ public class AuthController {
     @PostMapping("/sign-in/google")
     public ResponseEntity<SignInResponse> signInWithGoogle(@RequestBody SignInRequest request) {
         return ResponseEntity.ok(authService.signIn(request.idTokenString(), SocialType.GOOGLE));
+    }
+
+    @PostMapping("/refresh/token")
+    public ResponseEntity<TokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(authService.refreshToken(request.refreshToken()));
     }
 }

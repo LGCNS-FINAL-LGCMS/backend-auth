@@ -52,6 +52,12 @@ public class AuthService {
         return SignInResponse.notMemberDto(createTokens(response.memberId()));
     }
 
+    public TokenResponse refreshToken(String refreshToken) {
+        // 기존의 refreshToken 블랙리스트 등록 할까 말까
+        String memberId = jwtTokenProvider.getMemberId(refreshToken, JwtType.REFRESH_TOKEN);
+        return createTokens(memberId);
+    }
+
     private TokenResponse createTokens(String memberId) {
         long currentTimeMillis = System.currentTimeMillis();
         String accessToken = jwtTokenProvider.createJwt(memberId, JwtType.ACCESS_TOKEN, currentTimeMillis);
