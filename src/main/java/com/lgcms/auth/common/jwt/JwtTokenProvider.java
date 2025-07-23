@@ -15,6 +15,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 import static com.lgcms.auth.common.dto.exception.AuthError.*;
 
@@ -35,30 +36,32 @@ public class JwtTokenProvider {
         accessSecretKey = new SecretKeySpec(accessJwtSecret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS512.key().build().getAlgorithm());
     }
 
-    public String createJwt(String memberId, JwtType tokenType, Long currentTimeMillis) {
+    public String createJwt(String memberId, JwtType tokenType, Long currentTimeMillis, String jti) {
         if (tokenType == JwtType.REFRESH_TOKEN)
-            return getRefreshJwt(memberId, currentTimeMillis);
+            return getRefreshJwt(memberId, currentTimeMillis, jti);
         else if (tokenType == JwtType.ACCESS_TOKEN)
-            return getAccessJwt(memberId, currentTimeMillis);
+            return getAccessJwt(memberId, currentTimeMillis, jti);
         else
             throw new BaseException(UNSUPPORTED_TOKEN_TYPE);
     }
 
-    private String getRefreshJwt(String memberId, Long currentTimeMillis) {
+    private String getRefreshJwt(String memberId, Long currentTimeMillis, String jti) {
         return Jwts.builder()
             .issuer(issuer)
             .subject(memberId)
             .claim("tokenType", JwtType.REFRESH_TOKEN.getData())
+            .claim("jti", jti)
             .issuedAt(new Date(currentTimeMillis))
             .expiration(new Date(currentTimeMillis + refreshExpiredTime))
             .signWith(refreshSecretKey).compact();
     }
 
-    private String getAccessJwt(String memberId, Long currentTimeMillis) {
+    private String getAccessJwt(String memberId, Long currentTimeMillis, String jti) {
         return Jwts.builder()
             .issuer(issuer)
             .subject(memberId)
             .claim("tokenType", JwtType.ACCESS_TOKEN.getData())
+            .claim("jti", jti)
             .issuedAt(new Date(currentTimeMillis))
             .expiration(new Date(currentTimeMillis + accessExpiredTime))
             .signWith(accessSecretKey).compact();
@@ -70,6 +73,19 @@ public class JwtTokenProvider {
                 return Jwts.parser().verifyWith(refreshSecretKey).build().parseSignedClaims(token).getPayload().getSubject();
             else if (jwtType == JwtType.ACCESS_TOKEN)
                 return Jwts.parser().verifyWith(accessSecretKey).build().parseSignedClaims(token).getPayload().getSubject();
+            else
+                throw new BaseException(UNSUPPORTED_TOKEN_TYPE);
+        } catch (SignatureException e) {
+            throw new BaseException(TOKEN_DECODE_FAILED);
+        }
+    }
+
+    public String getJti(String token, JwtType jwtType) {
+        try {
+            if (jwtType == JwtType.REFRESH_TOKEN)
+                return Jwts.parser().verifyWith(refreshSecretKey).build().parseSignedClaims(token).getPayload().get("jti").toString();
+            else if (jwtType == JwtType.ACCESS_TOKEN)
+                return Jwts.parser().verifyWith(accessSecretKey).build().parseSignedClaims(token).getPayload().get("jti").toString();
             else
                 throw new BaseException(UNSUPPORTED_TOKEN_TYPE);
         } catch (SignatureException e) {
@@ -96,5 +112,9 @@ public class JwtTokenProvider {
             throw new BaseException(UNSUPPORTED_JWT);
         }
         return true;
+    }
+
+    public String createJti() {
+        return UUID.randomUUID().toString();
     }
 }

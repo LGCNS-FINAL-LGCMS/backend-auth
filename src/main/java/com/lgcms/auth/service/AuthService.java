@@ -60,8 +60,9 @@ public class AuthService {
 
     private TokenResponse createTokens(String memberId) {
         long currentTimeMillis = System.currentTimeMillis();
-        String accessToken = jwtTokenProvider.createJwt(memberId, JwtType.ACCESS_TOKEN, currentTimeMillis);
-        String refreshToken = jwtTokenProvider.createJwt(memberId, JwtType.REFRESH_TOKEN, currentTimeMillis);
+        String jti = jwtTokenProvider.createJti();
+        String accessToken = jwtTokenProvider.createJwt(memberId, JwtType.ACCESS_TOKEN, currentTimeMillis, jti);
+        String refreshToken = jwtTokenProvider.createJwt(memberId, JwtType.REFRESH_TOKEN, currentTimeMillis, jti);
         return TokenResponse.toDto(accessToken, refreshToken);
     }
 }
