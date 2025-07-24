@@ -74,4 +74,10 @@ public class AuthService {
     public boolean logout(String jti) {
         return jtiRedisRepository.addJti(jti);
     }
+
+    public boolean signout(String jti, Long memberId) {
+        remoteMemberService.signout(memberId);
+        jtiRedisRepository.addJti(jti);
+        return true;
+    }
 }

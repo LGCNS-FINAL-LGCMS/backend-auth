@@ -38,4 +38,12 @@ public class AuthController {
     public ResponseEntity<Boolean> logout(@RequestHeader("X-JTI") String jti) {
         return ResponseEntity.ok(authService.logout(jti));
     }
+
+    @PostMapping("/sign-out/google")
+    public ResponseEntity<Boolean> signout(
+        @RequestHeader("X-JTI") String jti,
+        @RequestHeader("X-USER-ID") Long memberId
+    ) {
+        return ResponseEntity.ok(authService.signout(jti, memberId));
+    }
 }
