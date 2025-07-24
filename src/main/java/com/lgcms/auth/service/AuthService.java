@@ -70,4 +70,8 @@ public class AuthService {
         String refreshToken = jwtTokenProvider.createJwt(memberId, JwtType.REFRESH_TOKEN, currentTimeMillis, jti);
         return TokenResponse.toDto(accessToken, refreshToken);
     }
+
+    public boolean logout(String jti) {
+        return jtiRedisRepository.addJti(jti);
+    }
 }
