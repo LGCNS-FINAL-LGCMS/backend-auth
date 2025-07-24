@@ -15,6 +15,7 @@ public enum AuthError implements ErrorCodeInterface {
     NO_SUCH_SOCIAL_TYPE("AUTH_006", "지원하는 소셜 로그인 타입이 아닙니다.", HttpStatus.NOT_FOUND),
     FAILED_GOOGLE_SOCIAL_LOGIN("AUTH_007", "구글 소셜 로그인에 실패했습니다.", HttpStatus.BAD_REQUEST),
     MEMBER_SERVER_ERROR("AUTH_008", "회원 서버 통신 오류", HttpStatus.I_AM_A_TEAPOT),
+    USED_REFRESH_TOKEN("AUTH_009", "사용할 수 없는 리프레시 토큰입니다.", HttpStatus.BAD_REQUEST),
     ;
     private final String status;
     private final String message;

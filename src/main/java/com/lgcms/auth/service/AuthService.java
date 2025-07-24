@@ -10,12 +10,12 @@ import com.lgcms.auth.remote.member.RemoteMemberService;
 import com.lgcms.auth.remote.member.dto.MemberRequest.SignupRequest;
 import com.lgcms.auth.remote.member.dto.MemberResponse.SignupResponse;
 import com.lgcms.auth.remote.member.dto.SocialType;
+import com.lgcms.auth.repository.JtiRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import static com.lgcms.auth.common.dto.exception.AuthError.MEMBER_SERVER_ERROR;
-import static com.lgcms.auth.common.dto.exception.AuthError.NO_SUCH_SOCIAL_TYPE;
+import static com.lgcms.auth.common.dto.exception.AuthError.*;
 
 @Slf4j
 @Service
@@ -24,6 +24,7 @@ public class AuthService {
     private final RemoteMemberService remoteMemberService;
     private final OauthUtil oauthUtil;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JtiRedisRepository jtiRedisRepository;
 
     public SignInResponse signIn(String idTokenString, SocialType socialType) {
         String sub = null;
@@ -53,9 +54,13 @@ public class AuthService {
     }
 
     public TokenResponse refreshToken(String refreshToken) {
-        // 기존의 refreshToken 블랙리스트 등록 할까 말까
+        String prevJti = jwtTokenProvider.getJti(refreshToken, JwtType.REFRESH_TOKEN);
+        if (jtiRedisRepository.isBlackList(prevJti))
+            throw new BaseException(USED_REFRESH_TOKEN);
         String memberId = jwtTokenProvider.getMemberId(refreshToken, JwtType.REFRESH_TOKEN);
-        return createTokens(memberId);
+        TokenResponse tokenResponse = createTokens(memberId);
+        jtiRedisRepository.addJti(prevJti);
+        return tokenResponse;
     }
 
     private TokenResponse createTokens(String memberId) {
