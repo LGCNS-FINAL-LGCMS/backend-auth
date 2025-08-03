@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(
     name = "RemoteMemberService",
-    path = "/backend/members"
+    path = "/api/internal/member"
 )
 public interface RemoteMemberService {
     @PostMapping("/signup")

@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@RequestMapping("/open/auth/")
+@RequestMapping("/api/auth/")
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
