@@ -12,6 +12,7 @@ public class AuthResponse {
         public static SignInResponse memberDto(TokenResponse tokens) {
             return new SignInResponse(true, tokens);
         }
+
         public static SignInResponse notMemberDto(TokenResponse tokens) {
             return new SignInResponse(false, tokens);
         }
@@ -23,6 +24,22 @@ public class AuthResponse {
     ) {
         public static TokenResponse toDto(String accessToken, String refreshToken) {
             return new TokenResponse(accessToken, refreshToken);
+        }
+    }
+
+    public record LogoutResponse(
+        Boolean isDone
+    ) {
+        public static LogoutResponse toDto(Boolean isDone) {
+            return new LogoutResponse(isDone);
+        }
+    }
+
+    public record SignoutResponse(
+        Boolean isDone
+    ) {
+        public static SignoutResponse toDto(Boolean isDone) {
+            return new SignoutResponse(isDone);
         }
     }
 }

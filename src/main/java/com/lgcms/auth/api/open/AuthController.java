@@ -2,8 +2,11 @@ package com.lgcms.auth.api.open;
 
 import com.lgcms.auth.api.dto.AuthRequest.RefreshTokenRequest;
 import com.lgcms.auth.api.dto.AuthRequest.SignInRequest;
+import com.lgcms.auth.api.dto.AuthResponse.LogoutResponse;
 import com.lgcms.auth.api.dto.AuthResponse.SignInResponse;
+import com.lgcms.auth.api.dto.AuthResponse.SignoutResponse;
 import com.lgcms.auth.api.dto.AuthResponse.TokenResponse;
+import com.lgcms.auth.common.dto.BaseResponse;
 import com.lgcms.auth.remote.member.dto.SocialType;
 import com.lgcms.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -25,25 +28,25 @@ public class AuthController {
      * @return
      */
     @PostMapping("/sign-in/google")
-    public ResponseEntity<SignInResponse> signInWithGoogle(@RequestBody SignInRequest request) {
-        return ResponseEntity.ok(authService.signIn(request.idTokenString(), SocialType.GOOGLE));
+    public ResponseEntity<BaseResponse<SignInResponse>> signInWithGoogle(@RequestBody SignInRequest request) {
+        return ResponseEntity.ok(BaseResponse.ok(authService.signIn(request.idTokenString(), SocialType.GOOGLE)));
     }
 
     @PostMapping("/refresh/token")
-    public ResponseEntity<TokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
-        return ResponseEntity.ok(authService.refreshToken(request.refreshToken()));
+    public ResponseEntity<BaseResponse<TokenResponse>> refreshToken(@RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(BaseResponse.ok(authService.refreshToken(request.refreshToken())));
     }
 
     @DeleteMapping("/logout")
-    public ResponseEntity<Boolean> logout(@RequestHeader("X-JTI") String jti) {
-        return ResponseEntity.ok(authService.logout(jti));
+    public ResponseEntity<BaseResponse<LogoutResponse>> logout(@RequestHeader("X-JTI") String jti) {
+        return ResponseEntity.ok(BaseResponse.ok(LogoutResponse.toDto(authService.logout(jti))));
     }
 
     @PostMapping("/sign-out/google")
-    public ResponseEntity<Boolean> signout(
+    public ResponseEntity<BaseResponse<SignoutResponse>> signout(
         @RequestHeader("X-JTI") String jti,
         @RequestHeader("X-USER-ID") Long memberId
     ) {
-        return ResponseEntity.ok(authService.signout(jti, memberId));
+        return ResponseEntity.ok(BaseResponse.ok(SignoutResponse.toDto(authService.signout(jti, memberId))));
     }
 }
