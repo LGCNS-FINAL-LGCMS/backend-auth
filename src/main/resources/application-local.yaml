@@ -4,11 +4,11 @@ spring:
       client:
         config:
           RemoteMemberService:
-            url: http://localhost:8081
+            url: http://localhost:38109
   data:
     redis:
       host: localhost
-      port: 6379
+      port: 38122
       database: 0
 jwt:
   issuer: lgcms
@@ -18,3 +18,5 @@ jwt:
   access_expired_time: 10800000 # 1000 * 60 * 60 * 3 = 10800000 (3시간)
 google:
   audience: ${GOOGLE_AUDIENCE}
+server:
+  port: 38102
