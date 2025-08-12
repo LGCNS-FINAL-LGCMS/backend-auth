@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 public class MemberResponse {
     public record SignupResponse(
         Boolean alreadyExist,
-        String memberId
+        String memberId,
+        String role
     ) {
     }
 }

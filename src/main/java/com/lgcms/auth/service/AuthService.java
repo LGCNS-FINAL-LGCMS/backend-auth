@@ -48,9 +48,9 @@ public class AuthService {
             throw new BaseException(MEMBER_SERVER_ERROR);
         }
         if (response.alreadyExist()) {
-            return SignInResponse.memberDto(createTokens(response.memberId()));
+            return SignInResponse.memberDto(createTokens(response.memberId(), response.role()));
         }
-        return SignInResponse.notMemberDto(createTokens(response.memberId()));
+        return SignInResponse.notMemberDto(createTokens(response.memberId(), response.role()));
     }
 
     public TokenResponse refreshToken(String refreshToken) {
@@ -58,16 +58,17 @@ public class AuthService {
         if (jtiRedisRepository.isBlackList(prevJti))
             throw new BaseException(USED_REFRESH_TOKEN);
         String memberId = jwtTokenProvider.getMemberId(refreshToken, JwtType.REFRESH_TOKEN);
-        TokenResponse tokenResponse = createTokens(memberId);
+        String role = jwtTokenProvider.getRole(refreshToken, JwtType.REFRESH_TOKEN);
+        TokenResponse tokenResponse = createTokens(memberId, role);
         jtiRedisRepository.addJti(prevJti);
         return tokenResponse;
     }
 
-    private TokenResponse createTokens(String memberId) {
+    private TokenResponse createTokens(String memberId, String role) {
         long currentTimeMillis = System.currentTimeMillis();
         String jti = jwtTokenProvider.createJti();
-        String accessToken = jwtTokenProvider.createJwt(memberId, JwtType.ACCESS_TOKEN, currentTimeMillis, jti);
-        String refreshToken = jwtTokenProvider.createJwt(memberId, JwtType.REFRESH_TOKEN, currentTimeMillis, jti);
+        String accessToken = jwtTokenProvider.createJwt(memberId, JwtType.ACCESS_TOKEN, currentTimeMillis, jti, role);
+        String refreshToken = jwtTokenProvider.createJwt(memberId, JwtType.REFRESH_TOKEN, currentTimeMillis, jti, role);
         return TokenResponse.toDto(accessToken, refreshToken);
     }
 

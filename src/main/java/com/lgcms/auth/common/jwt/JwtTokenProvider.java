@@ -36,32 +36,34 @@ public class JwtTokenProvider {
         accessSecretKey = new SecretKeySpec(accessJwtSecret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS512.key().build().getAlgorithm());
     }
 
-    public String createJwt(String memberId, JwtType tokenType, Long currentTimeMillis, String jti) {
+    public String createJwt(String memberId, JwtType tokenType, Long currentTimeMillis, String jti, String role) {
         if (tokenType == JwtType.REFRESH_TOKEN)
-            return getRefreshJwt(memberId, currentTimeMillis, jti);
+            return getRefreshJwt(memberId, currentTimeMillis, jti, role);
         else if (tokenType == JwtType.ACCESS_TOKEN)
-            return getAccessJwt(memberId, currentTimeMillis, jti);
+            return getAccessJwt(memberId, currentTimeMillis, jti, role);
         else
             throw new BaseException(UNSUPPORTED_TOKEN_TYPE);
     }
 
-    private String getRefreshJwt(String memberId, Long currentTimeMillis, String jti) {
+    private String getRefreshJwt(String memberId, Long currentTimeMillis, String jti, String role) {
         return Jwts.builder()
             .issuer(issuer)
             .subject(memberId)
             .claim("tokenType", JwtType.REFRESH_TOKEN.getData())
             .claim("jti", jti)
+            .claim("role", role)
             .issuedAt(new Date(currentTimeMillis))
             .expiration(new Date(currentTimeMillis + refreshExpiredTime))
             .signWith(refreshSecretKey).compact();
     }
 
-    private String getAccessJwt(String memberId, Long currentTimeMillis, String jti) {
+    private String getAccessJwt(String memberId, Long currentTimeMillis, String jti, String role) {
         return Jwts.builder()
             .issuer(issuer)
             .subject(memberId)
             .claim("tokenType", JwtType.ACCESS_TOKEN.getData())
             .claim("jti", jti)
+            .claim("role", role)
             .issuedAt(new Date(currentTimeMillis))
             .expiration(new Date(currentTimeMillis + accessExpiredTime))
             .signWith(accessSecretKey).compact();
@@ -86,6 +88,19 @@ public class JwtTokenProvider {
                 return Jwts.parser().verifyWith(refreshSecretKey).build().parseSignedClaims(token).getPayload().get("jti").toString();
             else if (jwtType == JwtType.ACCESS_TOKEN)
                 return Jwts.parser().verifyWith(accessSecretKey).build().parseSignedClaims(token).getPayload().get("jti").toString();
+            else
+                throw new BaseException(UNSUPPORTED_TOKEN_TYPE);
+        } catch (SignatureException e) {
+            throw new BaseException(TOKEN_DECODE_FAILED);
+        }
+    }
+
+    public String getRole(String token, JwtType jwtType) {
+        try {
+            if (jwtType == JwtType.REFRESH_TOKEN)
+                return Jwts.parser().verifyWith(refreshSecretKey).build().parseSignedClaims(token).getPayload().get("role").toString();
+            else if (jwtType == JwtType.ACCESS_TOKEN)
+                return Jwts.parser().verifyWith(accessSecretKey).build().parseSignedClaims(token).getPayload().get("role").toString();
             else
                 throw new BaseException(UNSUPPORTED_TOKEN_TYPE);
         } catch (SignatureException e) {

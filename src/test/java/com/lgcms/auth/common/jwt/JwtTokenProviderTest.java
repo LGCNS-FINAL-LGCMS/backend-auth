@@ -22,8 +22,8 @@ class JwtTokenProviderTest {
         String memberId = "1";
         long currentTimeMillis = System.currentTimeMillis();
         String jti = jwtTokenProvider.createJti();
-        String accessToken = jwtTokenProvider.createJwt(memberId, JwtType.ACCESS_TOKEN, currentTimeMillis, jti);
-        String refreshToken = jwtTokenProvider.createJwt(memberId, JwtType.REFRESH_TOKEN, currentTimeMillis, jti);
+        String accessToken = jwtTokenProvider.createJwt(memberId, JwtType.ACCESS_TOKEN, currentTimeMillis, jti, "STUDENT");
+        String refreshToken = jwtTokenProvider.createJwt(memberId, JwtType.REFRESH_TOKEN, currentTimeMillis, jti, "STUDENT");
 
         // when
         String accessJti = jwtTokenProvider.getJti(accessToken, JwtType.ACCESS_TOKEN);
