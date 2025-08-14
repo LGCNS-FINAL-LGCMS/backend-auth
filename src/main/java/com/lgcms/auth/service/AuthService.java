@@ -48,9 +48,9 @@ public class AuthService {
             throw new BaseException(MEMBER_SERVER_ERROR);
         }
         if (response.alreadyExist()) {
-            return SignInResponse.memberDto(createTokens(response.memberId(), response.role()));
+            return SignInResponse.memberDto(createTokens(response.memberInfo().memberId().toString(), response.memberInfo().role()), response.memberInfo());
         }
-        return SignInResponse.notMemberDto(createTokens(response.memberId(), response.role()));
+        return SignInResponse.notMemberDto(createTokens(response.memberInfo().memberId().toString(), response.memberInfo().role()), response.memberInfo());
     }
 
     public TokenResponse refreshToken(String refreshToken) {
