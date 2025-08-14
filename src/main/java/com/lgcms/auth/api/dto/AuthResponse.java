@@ -1,5 +1,6 @@
 package com.lgcms.auth.api.dto;
 
+import com.lgcms.auth.remote.member.dto.MemberResponse.MemberInfoResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -7,14 +8,15 @@ import lombok.NoArgsConstructor;
 public class AuthResponse {
     public record SignInResponse(
         Boolean alreadyMember,
-        TokenResponse tokens
+        TokenResponse tokens,
+        MemberInfoResponse memberInfo
     ) {
-        public static SignInResponse memberDto(TokenResponse tokens) {
-            return new SignInResponse(true, tokens);
+        public static SignInResponse memberDto(TokenResponse tokens, MemberInfoResponse memberInfo) {
+            return new SignInResponse(true, tokens, memberInfo);
         }
 
-        public static SignInResponse notMemberDto(TokenResponse tokens) {
-            return new SignInResponse(false, tokens);
+        public static SignInResponse notMemberDto(TokenResponse tokens, MemberInfoResponse memberInfo) {
+            return new SignInResponse(false, tokens, memberInfo);
         }
     }
 
