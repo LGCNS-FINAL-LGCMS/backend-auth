@@ -15,25 +15,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@RequestMapping("/auth/")
+@RequestMapping("/student/auth/")
 @RestController
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthStudentController {
     private final AuthService authService;
 
-    /**
-     * true를 반환하면 이미 가입된 사용자, false를 반환하면 신규 가입한 사용자
-     *
-     * @param request
-     * @return
-     */
-    @PostMapping("/sign-in/google")
-    public ResponseEntity<BaseResponse<SignInResponse>> signInWithGoogle(@RequestBody SignInRequest request) {
-        return ResponseEntity.ok(BaseResponse.ok(authService.signIn(request.idTokenString(), SocialType.GOOGLE)));
+    @DeleteMapping("/logout")
+    public ResponseEntity<BaseResponse<LogoutResponse>> logout(@RequestHeader("X-JTI") String jti) {
+        return ResponseEntity.ok(BaseResponse.ok(LogoutResponse.toDto(authService.logout(jti))));
     }
 
-    @PostMapping("/refresh/token")
-    public ResponseEntity<BaseResponse<TokenResponse>> refreshToken(@RequestBody RefreshTokenRequest request) {
-        return ResponseEntity.ok(BaseResponse.ok(authService.refreshToken(request.refreshToken())));
+    @PostMapping("/sign-out/google")
+    public ResponseEntity<BaseResponse<SignoutResponse>> signout(
+        @RequestHeader("X-JTI") String jti,
+        @RequestHeader("X-USER-ID") Long memberId
+    ) {
+        return ResponseEntity.ok(BaseResponse.ok(SignoutResponse.toDto(authService.signout(jti, memberId))));
     }
 }
