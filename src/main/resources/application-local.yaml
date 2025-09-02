@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: backend-auth
   cloud:
     openfeign:
       client:
@@ -18,5 +20,13 @@ jwt:
   access_expired_time: 10800000 # 1000 * 60 * 60 * 3 = 10800000 (3시간)
 google:
   audience: ${GOOGLE_AUDIENCE}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+  metrics:
+    tags:
+      application: ${spring.application.name}
 server:
   port: 38102
