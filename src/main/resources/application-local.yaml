@@ -21,6 +21,9 @@ jwt:
 google:
   audience: ${GOOGLE_AUDIENCE}
 management:
+  otlp:
+    tracing:
+      endpoint: http://localhost:4317
   endpoints:
     web:
       exposure:
@@ -28,5 +31,10 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+  tracing:
+    sampling:
+      probability: 1.0
+    propagation:
+      type: b3
 server:
   port: 38102
