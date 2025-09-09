@@ -3,6 +3,7 @@ package com.lgcms.auth.remote.member.dto;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -18,6 +19,7 @@ public class MemberResponse {
         String nickname,
         String role,
         Boolean desireLecturer,
+        LocalDateTime desireLecturerDate,
         List<Category> categories
     ) {
     }
